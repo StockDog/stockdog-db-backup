@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  stockdog-db-backup
+
+  Sample SAM Template for stockdog-db-backup
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+
+Parameters:
+  DatabaseHost:
+    Type: String
+    Description: The Database's host URL
+    Default: localhost
+  DatabaseName:
+    Type: String
+    Description: The Database's name
+    Default: StockDog
+  DatabaseUser:
+    Type: String
+    Description: The Database's user
+    Default: sduser
+  DatabasePass:
+    Type: String
+    Description: The Database's pass
+    Default: sdpass
+  S3Bucket:
+    Type: String
+    Description: The Database's pass
+    Default: stockdog-db-backup
+
+Resources:
+  StockDogDbBackupFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: stockdog_db_backup/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Environment:
+        Variables:
+          DATABASE_HOST: !Ref DatabaseHost
+          DATABASE_NAME: !Ref DatabaseName
+          DATABASE_USER: !Ref DatabaseUser
+          DATABASE_PASS: !Ref DatabasePass
+          S3_BUCKET: !Ref S3Bucket
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  StockDogDbBackupFunction:
+    Description: "StockDogDbBackupFunction ARN"
+    Value: !GetAtt StockDogDbBackupFunction.Arn
+  StockDogDbBackupFunctionIamRole:
+    Description: "Implicit IAM Role created for StockDogDbBackupFunction"
+    Value: !GetAtt StockDogDbBackupFunctionRole.Arn
